@@ -47,7 +47,7 @@ const autoMerge = (repository: IRepository, commits: ICommit[], head_sha: string
             if (pullRequest) {
                 const assignees = commits.map(c => c.committer.username).filter(u => u !== 'web-flow');
                 postMessage({
-                    channel: 'dev', text: `Hey slackers, I'm trying to do my job here, but, as always, one of you is blocking me.
+                    channel: 'tryharder', text: `Hey slackers, I'm trying to do my job here, but, as always, one of you is blocking me.
 There was a conflict on ${repository.name}.
 You know me, I only work with blaming, and based on the committers, I'm going to point my finger at ${assignees.join(', ')}.
 Fix this ASAP, or somebody will have their ass kicked.` });
