@@ -36,7 +36,7 @@ export const pullRequest = async ({ action, pull_request }: IPullRequestEvent) =
                 })
             }
 
-            if (action === "opened" && ENABLE_PR_QUOTES && prQuotes.coolGuys.includes(user.login)) {
+            if (action === "opened" && ENABLE_PR_QUOTES && prQuotes.coolCats.includes(user.login)) {
                 const quotes: string[] = prQuotes.quotes;
                 const pos = Math.floor(Math.random() * quotes.length);
                 await addComment({
