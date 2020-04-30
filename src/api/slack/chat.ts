@@ -8,5 +8,8 @@ export interface IPostMessageParams {
 
 export const postMessage = async (params: IPostMessageParams) => {
     const web = new WebClient(SLACK_TOKEN);
-    return await web.chat.postMessage(params);
+    return await web.chat.postMessage({
+        text: params.text,
+        channel: params.channel,
+    });
 }
