@@ -41,7 +41,7 @@ export const pullRequest = async ({ action, pull_request }: IPullRequestEvent) =
                 break;
 
             const prUrl = pull_request.html_url;
-            postMessage({ text: `<!here> A New PR is ready for review: ${prUrl}`, channel: "random" });
+            postMessage({ text: `<!here> A New PR is ready for review: ${prUrl}`, channel: "hippo-devs" });
 
             if (ENABLE_PR_QUOTES && prQuotes.coolCats.includes(user.login)) {
                 const quotes: string[] = prQuotes.quotes;
