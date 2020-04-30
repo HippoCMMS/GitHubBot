@@ -1,5 +1,6 @@
 export default interface IPullRequest {
     number: number;
+    html_url: string;
     head: {
         ref: string; // without refs/heads
         repo: {

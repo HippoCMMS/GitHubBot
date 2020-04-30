@@ -5,7 +5,6 @@ import { createReviewRequest, addComment, approvePR } from '../api/pullRequest';
 import { ENABLE_PR_QUOTES } from '../env';
 import { getMembers } from '../api/teams';
 import { postMessage } from '../api/slack/chat';
-import { GITHUB_URL } from './../constants';
 const appSettings = require('../../appSettings.json');
 const prQuotes = require('../../prQuotes.json');
 
@@ -41,8 +40,8 @@ export const pullRequest = async ({ action, pull_request }: IPullRequestEvent) =
             if (action !== "opened")
                 break;
 
-            let PRUrl = `${GITHUB_URL}repos/${owner}/${name}/pulls/${number}`;
-            postMessage({ text: `@here A New PR is ready for review: ${PRUrl}`, channel: "hippo-devs" });
+            const prUrl = pull_request.html_url;
+            postMessage({ text: `<!here> A New PR is ready for review: ${prUrl}`, channel: "random" });
 
             if (ENABLE_PR_QUOTES && prQuotes.coolCats.includes(user.login)) {
                 const quotes: string[] = prQuotes.quotes;
