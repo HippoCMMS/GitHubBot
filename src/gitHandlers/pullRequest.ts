@@ -4,9 +4,10 @@ import { deleteBranch } from '../api/branch';
 import { createReviewRequest, addComment, approvePR } from '../api/pullRequest';
 import { ENABLE_PR_QUOTES } from '../env';
 import { getMembers } from '../api/teams';
-import { postMessage } from '../api/slack/chat';
+import { postMessage, createMessage } from '../api/slack/chat';
 const appSettings = require('../../appSettings.json');
 const prQuotes = require('../../prQuotes.json');
+const slackQuotes = require('../../slackQuotes.json');
 
 export const pullRequest = async ({ action, pull_request }: IPullRequestEvent) => {
     switch (action) {
@@ -20,8 +21,9 @@ export const pullRequest = async ({ action, pull_request }: IPullRequestEvent) =
         case "opened":
         case "reopened":
         case "synchronize":
-            const { head: { ref, repo: { name, owner } }, number, user } = pull_request;
+            const { head: { ref, repo: { name, owner } }, html_url, title, body, number, user } = pull_request;
             const getDevelopmentMembers = await getMembers();
+
             await createReviewRequest({
                 owner: owner.login,
                 repository: name,
@@ -40,19 +42,35 @@ export const pullRequest = async ({ action, pull_request }: IPullRequestEvent) =
             if (action !== "opened")
                 break;
 
-            const prUrl = pull_request.html_url;
-            postMessage({ text: `<!here> A New PR is ready for review: ${prUrl}`, channel: "hippo-devs" });
+            let quote = GetQuote(slackQuotes.quotes);
+            let text = quote.replace("user", pull_request.user.login);
+            let message = createMessage({
+                channel: "bot_sandbox",
+                author: pull_request.user.login,
+                number: pull_request.number,
+                title: pull_request.title,
+                description: pull_request.body,
+                url: pull_request.html_url,
+                messageText: text,
+                repository: pull_request.head.repo.name,
+                notificationText: "<!here> A new Pull Request is ready for review"
+            });
+            postMessage(message);
 
             if (ENABLE_PR_QUOTES && prQuotes.coolCats.includes(user.login)) {
-                const quotes: string[] = prQuotes.quotes;
-                const pos = Math.floor(Math.random() * quotes.length);
+                let quote = GetQuote(prQuotes.quotes);
                 await addComment({
                     owner: owner.login,
                     repository: name,
                     issueNumber: number,
-                    comment: quotes[pos]
+                    comment: quote
                 })
             }
             break;
     }
+}
+
+function GetQuote(quotes: string[]): string {
+    const pos = Math.floor(Math.random() * quotes.length);
+    return quotes[pos];
 }
